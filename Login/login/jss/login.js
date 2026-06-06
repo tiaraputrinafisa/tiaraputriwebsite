@@ -1,19 +1,36 @@
-(function () {
-	'use strict'
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-	// Fetch all the forms we want to apply custom Bootstrap validation styles to
-	var forms = document.querySelectorAll('.needs-validation')
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-	// Loop over them and prevent submission
-	Array.prototype.slice.call(forms)
-		.forEach(function (form) {
-			form.addEventListener('submit', function (event) {
-				if (!form.checkValidity()) {
-					event.preventDefault()
-					event.stopPropagation()
-				}
+    const res = await fetch("https://herisusanta.my.id/javalogin/api/auth.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    });
 
-				form.classList.add('was-validated')
-			}, false)
-		})
-})()
+    const data = await res.json();
+
+    if (data.status === "success") {
+        // simpan username
+            localStorage.setItem("username", data.username);
+            window.location.href = "../index.html";
+         
+    // } else {
+    //     document.getElementById("message").innerText = "Username / Password salah";alert("Login gagal");
+    // }
+    
+    } else {
+    const alertBox = document.getElementById("alertBox");
+    alertBox.innerText = "Username atau Password salah, silahkan coba lagi";
+    alertBox.style.display = "block";
+
+    setTimeout(() => {
+        alertBox.style.display = "none";
+    }, 3000);
+} 
+   
+});
